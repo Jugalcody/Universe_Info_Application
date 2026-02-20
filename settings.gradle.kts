@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Roverinfo"
+rootProject.name = "Universe"
 include(":app")
  

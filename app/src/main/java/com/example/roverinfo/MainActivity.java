@@ -12,11 +12,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getWindow().setStatusBarColor(getColor(R.color.black));
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 Intent i=new Intent(MainActivity.this,Home.class);
                 startActivity(i);
+                finishAffinity();
             }
         },5000);
     }

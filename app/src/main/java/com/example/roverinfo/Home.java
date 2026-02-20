@@ -5,106 +5,111 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.ref.ReferenceQueue;
-
 public class Home extends AppCompatActivity {
-ImageView sicon;
-EditText sbar;
-String url="https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date=";
-String date="";
-String temp="";
-String api="&api_key=ZEGMbvHl76CJSZPncEMgy2H1uVwFudNwULeXPJjK";
-RecyclerView rec;
+
+    RecyclerView rec;
+    ProgressBar p2;
+    ImageView sicon;
+    EditText title;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        sicon=findViewById(R.id.sicon);
-        sbar=findViewById(R.id.sbar);
+
         rec=findViewById(R.id.rec);
-        sicon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                date = sbar.getText().toString();
-                if(!date.equals("")) {
-                    temp=url+date+api;
+        p2=findViewById(R.id.pBar2);
+        title=findViewById(R.id.sbar);
+        sicon=findViewById(R.id.sicon);
 
+        title.setText("asteroid");
 
-                }
-                JsonObjectRequest j = new JsonObjectRequest(Request.Method.GET, temp, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
+        getWindow().setStatusBarColor(getColor(R.color.main));
+        title.setOnEditorActionListener((v, actionId, event) -> {
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                            actionId == EditorInfo.IME_ACTION_DONE) {
 
-                        try {
-                            JSONArray r=response.getJSONArray("photos");
-                            String[][] arr=new String[r.length()][5];
+                        loadData(title.getText().toString().trim());
+                        return true;
+                    }
+                    return false;
+                });
+        loadData(title.getText().toString().trim());
 
-                            for (int i=0;i<r.length();i++){
-                                String[] arr2=new String[9];
-                                JSONObject rov=r.getJSONObject(i).getJSONObject("rover");
-                                JSONObject cam=r.getJSONObject(i).getJSONObject("camera");
+        sicon.setOnClickListener(v -> loadData(title.getText().toString().trim()));
 
-                                arr2[0]=rov.getString("name");
-                                arr2[1]=rov.getString("status");
-                                arr2[2]=rov.getString("launch_date");
-                                arr2[3]=rov.getString("landing_date");
-                                arr2[4]=rov.getString("total_photos");
-                                arr2[5]=cam.getString("full_name");
-                               arr2[6]=r.getJSONObject(i).getString("img_src");
-                                arr2[7]=r.getJSONObject(i).getString("earth_date");
-                             arr[i]=arr2;
-                                rec.setAdapter(new Adapter1(Home.this,arr));
+    }
+    private void loadData(String key){
+        rec.setVisibility(View.GONE);
+        String url="https://images-api.nasa.gov/search?q="+key+"&media_type=image";
+        p2.setVisibility(View.VISIBLE);
 
+        JsonObjectRequest request=new JsonObjectRequest(
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+
+                    try{
+                        rec.setVisibility(View.VISIBLE);
+                        p2.setVisibility(View.GONE);
+                        JSONObject collection=response.getJSONObject("collection");
+                        JSONArray items=collection.getJSONArray("items");
+
+                        String[][] arr=new String[items.length()][3];
+
+                        for(int i=0;i<items.length();i++){
+
+                            JSONObject item=items.getJSONObject(i);
+
+                            /* NAME + DESCRIPTION */
+                            JSONObject data=item.getJSONArray("data").getJSONObject(0);
+
+                            arr[i][0]=data.getString("title");
+                            arr[i][1]=data.getString("description");
+
+                            /* IMAGE */
+                            if(item.has("links")){
+                                JSONArray links=item.getJSONArray("links");
+                                arr[i][2]=links.getJSONObject(0).getString("href");
+                            }else{
+                                arr[i][2]="";
                             }
-
-
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
                         }
 
-
-
-
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
+                        rec.setAdapter(new AdapterImage(arr,this));
+                        rec.setVisibility(View.VISIBLE);
+                        p2.setVisibility(View.GONE);
 
                     }
+                    catch(Exception e){
+                        p2.setVisibility(View.GONE);
+                        Toast.makeText(Home.this,"Parsing Error",Toast.LENGTH_LONG).show();
+                    }
+
+                },
+                error -> {
+                    p2.setVisibility(View.GONE);
+                    Toast.makeText(Home.this,"API Error",Toast.LENGTH_LONG).show();
                 });
-                RequestQueue q= Volley.newRequestQueue(Home.this);
 
-                q.add(j);
-            }}
-
-
-        );
-
-
-
-            }
-
-
-    @Override
-    public void onBackPressed() {
-
-        super.onBackPressed();
-        finishAffinity();
+        RequestQueue queue= Volley.newRequestQueue(this);
+        queue.add(request);
     }
 }
-

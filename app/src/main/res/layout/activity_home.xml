@@ -4,37 +4,49 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/white"
+    android:background="@color/main"
     android:layout_height="match_parent"
     tools:context=".Home">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:alpha="0.3"
+        android:src="@drawable/milkyway"
+        />
  <TextView
      android:layout_width="match_parent"
      android:layout_height="wrap_content"
-     android:text="@string/nasa_rover_data"
+     android:text="Universe"
      android:padding="20dp"
      android:id="@+id/title"
      android:gravity="center"
      android:fontFamily="serif-monospace"
      android:textColor="@color/white"
      android:background="@color/main"
-     android:textSize="20sp"
+     android:textSize="22sp"
      />
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+   android:orientation="horizontal"
+    android:id="@+id/sbarlayout"
+    android:layout_below="@+id/title"
+   >
     <EditText
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="date"
-        android:layout_below="@+id/title"
+        android:inputType="textNoSuggestions"
         android:background="#EDE9E9"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="0dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="5dp"
         android:textColorHint="@color/colorhint"
         android:padding="10dp"
         android:textColor="@color/black"
-        android:hint="@string/enter_earth_date"
+        android:hint="Search anything"
         android:textSize="15sp"
-        android:layout_marginStart="6dp"
+        android:layout_marginStart="20dp"
         android:id="@+id/sbar"
         />
     <ImageView
@@ -43,7 +55,7 @@
         android:src="@drawable/ic_action_name"
         android:layout_below="@+id/title"
         android:layout_alignEnd="@+id/sbar"
-        android:padding="10dp"
+        android:padding="9dp"
         android:background="#EDE9E9"
         android:id="@+id/sicon"
         android:layout_marginStart="0dp"
@@ -51,13 +63,25 @@
         android:layout_marginBottom="0dp"
         android:layout_marginEnd="1dp"
         />
-
+</LinearLayout>
+    <ProgressBar
+        android:id="@+id/pBar2"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:visibility="gone"
+        android:layout_below="@id/sbarlayout"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rec"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        android:layout_below="@id/sbar"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_below="@id/sbarlayout"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"

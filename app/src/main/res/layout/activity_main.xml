@@ -27,7 +27,7 @@
         android:padding="5dp"
         android:layout_centerHorizontal="true"
         android:layout_margin="27dp"
-        android:text="@string/mars_rover"
+        android:text="Universe Loading.."
         />
 
 

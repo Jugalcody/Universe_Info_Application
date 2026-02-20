@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Roverinfo</string>
+    <string name="app_name">Universe</string>
     <string name="mars_rover">Mars Rover</string>
     <string name="under_process">under process</string>
     <string name="nasa_rover_data">NASA ROVER DATA</string>
